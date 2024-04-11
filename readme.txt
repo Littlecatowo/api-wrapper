@@ -1,6 +1,7 @@
 設定流程 第一版
 
 編輯：浪貓(xLittlecatTw)
+Main 主支：Kamiya
 
 # CommonJS
     1. 在資料夾(api-wrapper)內或外 創建一個 main.js
