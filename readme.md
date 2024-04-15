@@ -1,6 +1,6 @@
 設定流程 第一版
 
-ReadMe編輯：浪貓(xLittlecatTw)
+ReadMe.md編輯：浪貓(xLittlecatTw)\n
 程式編寫：Kamiya
 
 # CommonJS
