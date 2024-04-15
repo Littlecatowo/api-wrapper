@@ -59,10 +59,35 @@ B. 創建在資料夾外 (Recommand)
 
 * 例子  
     ```js
+        const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.js");
+        const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.min.js");
+        
+        const key = "";
+        
+        const postData = {
+            email : "ExpTech 註冊的信箱",
+            pass  : "ExpTech 註冊的密碼",
+            name  : "名稱/軟體名稱/軟體版本號 1.0.0/裝置版本號 0.0.0",
+        };
+        
+        const requestOptions = {
+            method  : "POST",
+            headers : { "Content-Type": "application/json" },
+            body    : JSON.stringify(postData),
+        };
+        
+        fetch("https://api.exptech.com.tw/api/v3/et/login", requestOptions)
+            .then(res => {
+                if (!res.ok) throw new Error("Network response was not ok");
+                return res.text();
+            })
+            .then(data => key = data)
+            .catch(error => console.error("Error: ", error));
+    
         const api = new ExpTechApi(key);
         const ws = new ExpTechWebsocket({
             type: "start"
-            key: 你的key
+            key: key
             service: [訂閱項目]
             config?: {
                 "trem.rtw": number[測站ID放這裡] // 測站 ID
