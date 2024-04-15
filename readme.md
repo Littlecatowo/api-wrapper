@@ -59,48 +59,48 @@ B. 創建在資料夾外 (Recommand)
 
 ### 實作例子  
 ```js
-    const { ExpTechApi, ExpTechWebsocket, SupportedService } = require("./api-wrapper/dist/index.js");
-    /* or */
-    const { ExpTechApi, ExpTechWebsocket, SupportedService } = require("./api-wrapper/dist/index.min.js");
-    
-    const key = "";
-    
-    const postData = {
-        email : "ExpTech 註冊的信箱",
-        pass  : "ExpTech 註冊的密碼",
-        name  : "名稱/軟體名稱/軟體版本號 1.0.0/裝置版本號 0.0.0",
-    };
-    
-    const requestOptions = {
-        method  : "POST",
-        headers : { "Content-Type": "application/json" },
-        body    : JSON.stringify(postData),
-    };
-    
-    fetch("https://api.exptech.com.tw/api/v3/et/login", requestOptions)
-        .then(res => {
-            if (!res.ok) throw new Error("Network response was not ok");
-            return res.text();
-        })
-        .then(data => key = data)
-        .catch(error => console.error("Error: ", error));
+const { ExpTechApi, ExpTechWebsocket, SupportedService } = require("./api-wrapper/dist/index.js");
+/* or */
+const { ExpTechApi, ExpTechWebsocket, SupportedService } = require("./api-wrapper/dist/index.min.js");
 
-    const api = new ExpTechApi(key);
-    const ws = new ExpTechWebsocket({
-        key: "",
-        service: [SupportedService.RealtimeStation, SupportedService.RealtimeWave],
-        config: {
-            [SupportedService.RealtimeWave]: [
-            11366940, 6024428, 13898616, 4812424, 11339620, 6125804,
-            ],
-        },
-    });
+const key = "";
 
-    // 地震報告列表
-    api.getReportList().then(console.log)
+const postData = {
+    email : "ExpTech 註冊的信箱",
+    pass  : "ExpTech 註冊的密碼",
+    name  : "名稱/軟體名稱/軟體版本號 1.0.0/裝置版本號 0.0.0",
+};
 
-    // 地震速報
-    ws.on(WebSocketEvent.Eew, console.log);
+const requestOptions = {
+    method  : "POST",
+    headers : { "Content-Type": "application/json" },
+    body    : JSON.stringify(postData),
+};
+
+fetch("https://api.exptech.com.tw/api/v3/et/login", requestOptions)
+    .then(res => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.text();
+    })
+    .then(data => key = data)
+    .catch(error => console.error("Error: ", error));
+
+const api = new ExpTechApi(key);
+const ws = new ExpTechWebsocket({
+    key: "",
+    service: [SupportedService.RealtimeStation, SupportedService.RealtimeWave],
+    config: {
+        [SupportedService.RealtimeWave]: [
+        11366940, 6024428, 13898616, 4812424, 11339620, 6125804,
+        ],
+    },
+});
+
+// 地震報告列表
+api.getReportList().then(console.log)
+
+// 地震速報
+ws.on(WebSocketEvent.Eew, console.log);
 ```
 
 # TypeScript
