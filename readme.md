@@ -86,7 +86,6 @@ B. 創建在資料夾外 (Recommand)
 
     const api = new ExpTechApi(key);
     const ws = new ExpTechWebsocket({
-        type: "start",
         key: key,
         service: [訂閱項目],
         config?: {
