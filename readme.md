@@ -57,11 +57,53 @@ B. 創建在資料夾外 (Recommand)
                 
         *    config? 取得特定一個或數個測站的波形圖 (選填)
 
+### SupportedService & WebSocketEvent
+
+* SupportedService
+
+        * 即時地動資料
+        SupportedService["RealtimeStation"] = "trem.rts";
+        
+        * 即時地動波形圖資料
+        SupportedService["RealtimeWave"] = "trem.rtw";
+        
+        * 地震速報資料
+        SupportedService["Eew"] = "websocket.eew";
+        
+        * TREM 地震速報資料
+        SupportedService["TremEew"] = "trem.eew";
+        
+        * 中央氣象署地震報告資料
+        SupportedService["Report"] = "websocket.report";
+        
+        * 中央氣象署海嘯資訊資料
+        SupportedService["Tsunami"] = "websocket.tsunami";
+        
+        * 中央氣象署震度速報資料
+        SupportedService["CwaIntensity"] = "cwa.intensity";
+        
+        * TREM 震度速報資料
+        SupportedService["TremIntensity"] = "trem.intensity";
+
+* WebSocketEvent
+    
+        * 地震速報 聆聽事件
+        WebSocketEvent["Eew"] = "eew";
+        
+        * 地震報告 聆聽事件
+        WebSocketEvent["Report"] = "report";
+        
+        * 即時地動 聆聽事件
+        WebSocketEvent["Rts"] = "rts";
+        
+        * 即時地動波形圖資料 聆聽事件
+        WebSocketEvent["Rtw"] = "rtw";
+
 ### 實作例子  
 ```js
-const { ExpTechApi, ExpTechWebsocket, SupportedService } = require("./api-wrapper/dist/index.js");
+const { ExpTechApi, ExpTechWebsocket, SupportedService, WebSocketEvent } = require("./api-wrapper/dist/index.js");
 /* or */
-const { ExpTechApi, ExpTechWebsocket, SupportedService } = require("./api-wrapper/dist/index.min.js");
+const { ExpTechApi, ExpTechWebsocket, SupportedService, WebSocketEvent } = require("./api-wrapper/dist/index.min.js");
 
 const key = "";
 
