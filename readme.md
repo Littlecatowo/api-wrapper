@@ -129,7 +129,7 @@ fetch("https://api.exptech.com.tw/api/v3/et/login", requestOptions)
 
 const api = new ExpTechApi(key);
 const ws = new ExpTechWebsocket({
-    key: "",
+    key: key,
     service: [SupportedService.RealtimeStation, SupportedService.RealtimeWave],
     config: {
         [SupportedService.RealtimeWave]: [
