@@ -4,10 +4,10 @@ ReadMe編輯：浪貓(xLittlecatTw)
 程式編寫：Kamiya
 
 # CommonJS
-    ## 1. 在資料夾(api-wrapper)內或外 創建一個 main.js
+    # 1. 在資料夾(api-wrapper)內或外 創建一個 main.js
         -> 注意創建的位置，將影響 2. 的 import路徑
 
-    ## 2. import 所需 Class
+    # 2. import 所需 Class
 
         A. 創建在資料夾內 
             -> 如果日後 api-wrapper 有更新，自己寫的檔案會被覆蓋掉
@@ -25,7 +25,7 @@ ReadMe編輯：浪貓(xLittlecatTw)
             const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.min.js");
         ```
 
-    ## 3. 設定 api & websocket
+    # 3. 設定 api & websocket
         * 說明
             api 
                 * key 從 ExpTech 網頁取得的 key
