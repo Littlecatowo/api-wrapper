@@ -60,7 +60,7 @@ B. 創建在資料夾外 (Recommand)
 ### 實作例子  
 ```js
     const { ExpTechApi, ExpTechWebsocket, SupportedService } = require("./api-wrapper/dist/index.js");
-    const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.min.js");
+    const { ExpTechApi, ExpTechWebsocket, SupportedService } = require("./api-wrapper/dist/index.min.js");
     
     const key = "";
     
