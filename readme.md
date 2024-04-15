@@ -58,48 +58,48 @@ B. 創建在資料夾外 (Recommand)
         *    config? 取得特定一個或數個測站的波形圖 (選填)
 
 ### 實作例子  
-    ```js
-        const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.js");
-        const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.min.js");
-        
-        const key = "";
-        
-        const postData = {
-            email : "ExpTech 註冊的信箱",
-            pass  : "ExpTech 註冊的密碼",
-            name  : "名稱/軟體名稱/軟體版本號 1.0.0/裝置版本號 0.0.0",
-        };
-        
-        const requestOptions = {
-            method  : "POST",
-            headers : { "Content-Type": "application/json" },
-            body    : JSON.stringify(postData),
-        };
-        
-        fetch("https://api.exptech.com.tw/api/v3/et/login", requestOptions)
-            .then(res => {
-                if (!res.ok) throw new Error("Network response was not ok");
-                return res.text();
-            })
-            .then(data => key = data)
-            .catch(error => console.error("Error: ", error));
+```js
+    const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.js");
+    const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.min.js");
     
-        const api = new ExpTechApi(key);
-        const ws = new ExpTechWebsocket({
-            type: "start"
-            key: key
-            service: [訂閱項目]
-            config?: {
-                "trem.rtw": number[測站ID放這裡] // 測站 ID
-            }
-        });
+    const key = "";
+    
+    const postData = {
+        email : "ExpTech 註冊的信箱",
+        pass  : "ExpTech 註冊的密碼",
+        name  : "名稱/軟體名稱/軟體版本號 1.0.0/裝置版本號 0.0.0",
+    };
+    
+    const requestOptions = {
+        method  : "POST",
+        headers : { "Content-Type": "application/json" },
+        body    : JSON.stringify(postData),
+    };
+    
+    fetch("https://api.exptech.com.tw/api/v3/et/login", requestOptions)
+        .then(res => {
+            if (!res.ok) throw new Error("Network response was not ok");
+            return res.text();
+        })
+        .then(data => key = data)
+        .catch(error => console.error("Error: ", error));
 
-        // 地震報告列表
-        api.getReportList().then(console.log)
+    const api = new ExpTechApi(key);
+    const ws = new ExpTechWebsocket({
+        type: "start"
+        key: key
+        service: [訂閱項目]
+        config?: {
+            "trem.rtw": number[測站ID放這裡] // 測站 ID
+        }
+    });
 
-        // 地震速報
-        ws.on(WebSocketEvent.Eew, console.log);
-    ```
+    // 地震報告列表
+    api.getReportList().then(console.log)
+
+    // 地震速報
+    ws.on(WebSocketEvent.Eew, console.log);
+```
 
 # TypeScript
     * 待更新
