@@ -57,7 +57,7 @@ B. 創建在資料夾外 (Recommand)
                 
         *    config? 取得特定一個或數個測站的波形圖 (選填)
 
-* 例子  
+### 實作例子  
     ```js
         const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.js");
         const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.min.js");
