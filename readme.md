@@ -46,14 +46,14 @@ B. 創建在資料夾外 (Recommand)
         *    service 訂閱的服務項目 (必填)
              
                 #### **可訂閱項目**
-                *    trem.rts
-                *    trem.rtw
-                *    websocket.eew
-                *    trem.eew
-                *    websocket.report
-                *    websocket.tsunami
-                *    trem.intensity
-                *    cwa.intensity
+                1.    trem.rts
+                2.    trem.rtw
+                3.    websocket.eew
+                4.    trem.eew
+                5.    websocket.report
+                6.    websocket.tsunami
+                7.    trem.intensity
+                8.    cwa.intensity
                 
         *    config? 取得特定一個或數個測站的波形圖 (選填)
 
