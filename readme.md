@@ -59,7 +59,7 @@ B. 創建在資料夾外 (Recommand)
 
 ### 實作例子  
 ```js
-    const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.js");
+    const { ExpTechApi, ExpTechWebsocket, SupportedService } = require("./api-wrapper/dist/index.js");
     const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.min.js");
     
     const key = "";
@@ -86,11 +86,13 @@ B. 創建在資料夾外 (Recommand)
 
     const api = new ExpTechApi(key);
     const ws = new ExpTechWebsocket({
-        key: key,
-        service: [訂閱項目],
-        config?: {
-            "trem.rtw": number[測站ID放這裡] // 測站 ID
-        }
+        key: "",
+        service: [SupportedService.RealtimeStation, SupportedService.RealtimeWave],
+        config: {
+            [SupportedService.RealtimeWave]: [
+            11366940, 6024428, 13898616, 4812424, 11339620, 6125804,
+            ],
+        },
     });
 
     // 地震報告列表
