@@ -101,7 +101,7 @@ B. 創建在資料夾外 (Recommand)
 ```
 
 # TypeScript
-    * 待更新
+* 待更新
 
 # ESModule
-    * 待更新
+* 待更新
