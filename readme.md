@@ -86,9 +86,9 @@ B. 創建在資料夾外 (Recommand)
 
     const api = new ExpTechApi(key);
     const ws = new ExpTechWebsocket({
-        type: "start"
-        key: key
-        service: [訂閱項目]
+        type: "start",
+        key: key,
+        service: [訂閱項目],
         config?: {
             "trem.rtw": number[測站ID放這裡] // 測站 ID
         }
