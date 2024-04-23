@@ -34,7 +34,7 @@ B. *創建在資料夾外 (Recommand)*
 
 ### **3. 設定 api & websocket**
         
-* *說明*
+* 說明
         
     1. *api* 
             
