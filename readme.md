@@ -41,7 +41,6 @@ B. 創建在資料夾外 (Recommand)
         * key 從 ExpTech 網頁取得的 key
 
     2. websocket
-        *    type    不需修改  (必填)
         *    key     從 ExpTech 網頁取得的 key (必填)
         *    service 訂閱的服務項目 (必填)
              
