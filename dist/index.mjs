@@ -4,7 +4,7 @@ class Route {
     version;
     key;
     constructor(options = {}) {
-        this.version = options.version ?? 2;
+        this.version = options.version ?? 3;
         this.key = options.key ?? "";
     }
     randomServerUrl() {
@@ -21,6 +21,9 @@ class Route {
     }
     static websocket() {
         return `wss://lb-${Math.ceil(Math.random() * 4)}.exptech.com.tw/websocket`;
+    }
+    login(server = 1) {
+        return `https://api-${server}.exptech.com.tw/api/v${this.version}/et/login`;
     }
     earthquakeReportList(limit = 50) {
         return `${this.randomServerBaseUrl()}/eq/report?limit=${limit}&key=${this.key}`;
@@ -136,9 +139,14 @@ const Intensity = [
 class ExpTechApi extends EventEmitter {
     key;
     route;
-    constructor(key) {
+    headers;
+    constructor(key, defaultRequestHeaders) {
         super();
         this.key = key ?? "";
+        this.headers = defaultRequestHeaders ?? {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        };
         this.route = new Route({ key: this.key });
     }
     setApiKey(apiKey) {
@@ -156,6 +164,7 @@ class ExpTechApi extends EventEmitter {
             method: "GET",
             cache: "default",
             headers: {
+                ...this.headers,
                 Accept: "application/json",
             },
         });
@@ -164,6 +173,30 @@ class ExpTechApi extends EventEmitter {
             throw new Error(`Server returned ${res.status}`);
         return res;
     }
+    /**
+     * Inner post request wrapper
+     * @param {string} url
+     * @returns {Promise<any>}
+     */
+    async #post(url, body) {
+        const request = new Request(url, {
+            method: "POST",
+            cache: "default",
+            headers: {
+                ...this.headers,
+                Accept: "application/json",
+            },
+            body
+        });
+        const res = await fetch(request);
+        if (!res.ok)
+            throw new Error(`Server returned ${res.status}`);
+        return res;
+    }
+    /**
+     * 獲取測站資料
+     * @returns {Promise<Record<string, Station>>} 測站資料
+     */
     async getStations() {
         const url = this.route.station();
         return (await this.#get(url)).json();
@@ -173,7 +206,7 @@ class ExpTechApi extends EventEmitter {
      * @param {number} [limit]
      * @returns {Promise<PartialReport[]>}
      */
-    async getReports(limit) {
+    async getReportList(limit) {
         const url = this.route.earthquakeReportList(limit);
         const data = await (await this.#get(url)).json();
         for (const report of data)
@@ -232,6 +265,20 @@ class ExpTechApi extends EventEmitter {
         const url = this.route.eew(time ? `${time}` : "");
         return (await this.#get(url)).json();
     }
+    /**
+     * 獲取身份驗證代碼
+     * @param {AuthenticationDetail} options 身份驗證資訊
+     * @returns {Promise<string>} 身份驗證 Token
+     */
+    async getAuthToken(options, route = 1) {
+        const url = this.route.login(route);
+        const body = JSON.stringify({
+            email: options.email,
+            pass: options.password,
+            name: options.name
+        });
+        return (await this.#post(url, body)).text();
+    }
 }
 
 var WebSocketEvent;
@@ -241,31 +288,55 @@ var WebSocketEvent;
     WebSocketEvent["Ntp"] = "ntp";
     WebSocketEvent["Report"] = "report";
     WebSocketEvent["Rts"] = "rts";
+    WebSocketEvent["Rtw"] = "rtw";
     WebSocketEvent["Verify"] = "verify";
     WebSocketEvent["Close"] = "close";
     WebSocketEvent["Error"] = "error";
 })(WebSocketEvent || (WebSocketEvent = {}));
 var SupportedService;
 (function (SupportedService) {
+    /**
+     * 即時地動資料
+     */
     SupportedService["RealtimeStation"] = "trem.rts";
+    /**
+     * 即時地動波形圖資料
+     */
     SupportedService["RealtimeWave"] = "trem.rtw";
+    /**
+     * 地震速報資料
+     */
     SupportedService["Eew"] = "websocket.eew";
+    /**
+     * TREM 地震速報資料
+     */
     SupportedService["TremEew"] = "trem.eew";
+    /**
+     * 中央氣象署地震報告資料
+     */
     SupportedService["Report"] = "websocket.report";
+    /**
+     * 中央氣象署海嘯資訊資料
+     */
     SupportedService["Tsunami"] = "websocket.tsunami";
-    SupportedService["TremIntensity"] = "trem.intensity";
+    /**
+     * 中央氣象署震度速報資料
+     */
     SupportedService["CwaIntensity"] = "cwa.intensity";
+    /**
+     * TREM 震度速報資料
+     */
+    SupportedService["TremIntensity"] = "trem.intensity";
 })(SupportedService || (SupportedService = {}));
-var WebSocketCloseCode;
-(function (WebSocketCloseCode) {
-    WebSocketCloseCode[WebSocketCloseCode["InsufficientPermission"] = 4000] = "InsufficientPermission";
-})(WebSocketCloseCode || (WebSocketCloseCode = {}));
 class ExpTechWebsocket extends EventEmitter {
     ws;
     websocketConfig;
     constructor(websocketConfig) {
         super();
-        this.websocketConfig = websocketConfig;
+        this.websocketConfig = {
+            ...websocketConfig,
+            type: "start"
+        };
         this.#initWebSocket();
     }
     #initWebSocket() {
@@ -286,15 +357,11 @@ class ExpTechWebsocket extends EventEmitter {
                             break;
                         }
                         case WebSocketEvent.Info: {
+                            this.emit(WebSocketEvent.Info, data.data);
                             switch (data.data.code) {
-                                case 200:
-                                    if (!data.data.list.length) {
-                                        this.ws.close(WebSocketCloseCode.InsufficientPermission);
-                                        break;
-                                    }
-                                    break;
+                                case 200: break;
                                 case 503:
-                                    window.setTimeout(() => this.ws.send(JSON.stringify(this.websocketConfig)), 5_000);
+                                    setTimeout(() => this.ws.send(JSON.stringify(this.websocketConfig)), 5_000);
                                     break;
                             }
                             break;
@@ -303,6 +370,10 @@ class ExpTechWebsocket extends EventEmitter {
                             switch (data.data.type) {
                                 case WebSocketEvent.Rts: {
                                     this.emit(WebSocketEvent.Rts, data.data.data);
+                                    break;
+                                }
+                                case WebSocketEvent.Rtw: {
+                                    this.emit(WebSocketEvent.Rtw, data.data);
                                     break;
                                 }
                                 case WebSocketEvent.Eew: {
@@ -327,15 +398,19 @@ class ExpTechWebsocket extends EventEmitter {
             }
         });
         this.ws.addEventListener("close", (ev) => {
-            console.log("[WebSocket] Socket closed");
             this.emit(WebSocketEvent.Close, ev);
-            if (ev.code != WebSocketCloseCode.InsufficientPermission)
-                window.setTimeout(this.#initWebSocket.bind(this), 5_000);
         });
         this.ws.addEventListener("error", (err) => {
-            console.error("[WebSocket]", err);
+            this.emit(WebSocketEvent.Error, err);
         });
+    }
+    updateConfig(websocketConfig) {
+        this.websocketConfig = {
+            ...websocketConfig,
+            type: "start"
+        };
+        this.ws.send(JSON.stringify(this.websocketConfig));
     }
 }
 
-export { EewSource, EewStatus, ExpTechApi, ExpTechWebsocket, Intensity, SupportedService, WebSocketCloseCode, WebSocketEvent };
+export { EewSource, EewStatus, ExpTechApi, ExpTechWebsocket, Intensity, SupportedService, WebSocketEvent };

@@ -7,7 +7,7 @@ export interface StationInfo {
     /**
      * 測站郵遞區號 (地區編號)
      */
-    code: string;
+    code: number;
     /**
      * 測站經度
      */
@@ -74,10 +74,6 @@ export interface PartialReport {
      * 地震發生時間
      */
     time: number;
-    /**
-     * TREM 觀測網 ID
-     */
-    trem: number;
     /**
      * 地震報告編號
      */
@@ -187,6 +183,18 @@ export interface Rts {
      */
     int: IntensityListing[];
     replay?: boolean;
+}
+/**
+ * 測站波形資料
+ */
+export interface Rtw {
+    X: number[];
+    Y: number[];
+    Z: number[];
+    boot: boolean;
+    id: number;
+    time: number;
+    type: "rtw";
 }
 /**
  * 地震速報來源機關
@@ -311,6 +319,23 @@ export interface Ntp {
      */
     version: number;
 }
+/**
+ * 身份驗證資訊
+ */
+export interface AuthenticationDetail {
+    /**
+     * 身份驗證電子郵件
+     */
+    email: string;
+    /**
+     * 身份驗證密碼
+     */
+    password: string;
+    /**
+     * 身份驗證名稱
+     */
+    name: string;
+}
 export declare const Intensity: readonly [{
     readonly value: 0;
     readonly label: "0";
@@ -356,15 +381,20 @@ export declare class ExpTechApi extends EventEmitter {
     #private;
     key: string;
     route: Route;
-    constructor(key?: string);
+    headers: HeadersInit;
+    constructor(key?: string, defaultRequestHeaders?: HeadersInit);
     setApiKey(apiKey: string): this;
+    /**
+     * 獲取測站資料
+     * @returns {Promise<Record<string, Station>>} 測站資料
+     */
     getStations(): Promise<Record<string, Station>>;
     /**
      * 獲取地震報告列表
      * @param {number} [limit]
      * @returns {Promise<PartialReport[]>}
      */
-    getReports(limit?: number): Promise<PartialReport[]>;
+    getReportList(limit?: number): Promise<PartialReport[]>;
     /**
      * 獲取指定地震報告
      * @param {string} id 地震報告 ID
@@ -390,4 +420,10 @@ export declare class ExpTechApi extends EventEmitter {
      * @returns {Promise<Eew[]>}
      */
     getEew(time?: number, type?: EewSource): Promise<Eew[]>;
+    /**
+     * 獲取身份驗證代碼
+     * @param {AuthenticationDetail} options 身份驗證資訊
+     * @returns {Promise<string>} 身份驗證 Token
+     */
+    getAuthToken(options: AuthenticationDetail, route?: (1 | 2)): Promise<string>;
 }

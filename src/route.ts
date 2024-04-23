@@ -8,7 +8,7 @@ export default class Route {
   key: string;
 
   constructor(options: RouteOptions = {}) {
-    this.version = options.version ?? 2;
+    this.version = options.version ?? 3;
     this.key = options.key ?? "";
   }
 
@@ -30,6 +30,10 @@ export default class Route {
 
   static websocket() {
     return `wss://lb-${Math.ceil(Math.random() * 4)}.exptech.com.tw/websocket` as const;
+  }
+
+  login(server: number = 1) {
+    return `https://api-${server}.exptech.com.tw/api/v${this.version}/et/login` as const;
   }
 
   earthquakeReportList(limit: number = 50) {

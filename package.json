@@ -6,13 +6,12 @@
   "unpkg": "dist/index.min.js",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
-  "types": "types/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "type": "module",
   "license": "MIT",
   "author": "ExpTechTW",
   "files": [
-    "dist",
-    "types"
+    "dist/*"
   ],
   "exports": {
     ".": {

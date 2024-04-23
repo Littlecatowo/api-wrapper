@@ -9,7 +9,7 @@ export interface StationInfo {
   /**
    * 測站郵遞區號 (地區編號)
    */
-  code: string;
+  code: number;
   /**
    * 測站經度
    */
@@ -78,10 +78,6 @@ export interface PartialReport {
    * 地震發生時間
    */
   time: number;
-  /**
-   * TREM 觀測網 ID
-   */
-  trem: number;
   /**
    * 地震報告編號
    */
@@ -198,6 +194,19 @@ export interface Rts {
    */
   int: IntensityListing[];
   replay?: boolean;
+}
+
+/**
+ * 測站波形資料
+ */
+export interface Rtw {
+  X: number[];
+  Y: number[];
+  Z: number[];
+  boot: boolean;
+  id: number;
+  time: number;
+  type: "rtw";
 }
 
 /**
@@ -327,6 +336,24 @@ export interface Ntp {
   version: number;
 }
 
+/**
+ * 身份驗證資訊
+ */
+export interface AuthenticationDetail {
+  /**
+   * 身份驗證電子郵件
+   */
+  email: string;
+  /**
+   * 身份驗證密碼
+   */
+  password: string;
+  /**
+   * 身份驗證名稱
+   */
+  name: string;
+}
+
 export const Intensity = [
   { value: 0, label: "0", text: "０級" },
   { value: 1, label: "1", text: "１級" },
@@ -343,10 +370,15 @@ export const Intensity = [
 export class ExpTechApi extends EventEmitter {
   key: string;
   route: Route;
+  headers: HeadersInit;
 
-  constructor(key?: string) {
+  constructor(key?: string, defaultRequestHeaders?: HeadersInit) {
     super();
     this.key = key ?? "";
+    this.headers = defaultRequestHeaders ?? {
+      "Accept": "application/json",
+      "Content-Type": "application/json"
+    };
     this.route = new Route({ key: this.key });
   }
 
@@ -366,6 +398,7 @@ export class ExpTechApi extends EventEmitter {
       method: "GET",
       cache: "default",
       headers: {
+        ...this.headers,
         Accept: "application/json",
       },
     });
@@ -376,6 +409,32 @@ export class ExpTechApi extends EventEmitter {
     return res;
   }
 
+  /**
+   * Inner post request wrapper
+   * @param {string} url
+   * @returns {Promise<any>}
+   */
+  async #post(url: string, body: BodyInit): Promise<Response> {
+    const request = new Request(url, {
+      method: "POST",
+      cache: "default",
+      headers: {
+        ...this.headers,
+        Accept: "application/json",
+      },
+      body
+    });
+    const res = await fetch(request);
+
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+
+    return res;
+  }
+
+  /**
+   * 獲取測站資料
+   * @returns {Promise<Record<string, Station>>} 測站資料
+   */
   async getStations(): Promise<Record<string, Station>> {
     const url = this.route.station();
     return (await this.#get(url)).json();
@@ -386,7 +445,7 @@ export class ExpTechApi extends EventEmitter {
    * @param {number} [limit]
    * @returns {Promise<PartialReport[]>}
    */
-  async getReports(limit?: number): Promise<PartialReport[]> {
+  async getReportList(limit?: number): Promise<PartialReport[]> {
     const url = this.route.earthquakeReportList(limit);
     const data = await (await this.#get(url)).json();
     for (const report of data) report.no = +report.id.split("-")[0];
@@ -452,5 +511,20 @@ export class ExpTechApi extends EventEmitter {
   async getEew(time?: number, type?: EewSource): Promise<Eew[]> {
     const url = this.route.eew(time ? `${time}` : "");
     return (await this.#get(url)).json();
+  }
+
+  /**
+   * 獲取身份驗證代碼
+   * @param {AuthenticationDetail} options 身份驗證資訊
+   * @returns {Promise<string>} 身份驗證 Token
+   */
+  async getAuthToken(options: AuthenticationDetail, route: (1 | 2) = 1): Promise<string> {
+    const url = this.route.login(route);
+    const body = JSON.stringify({
+      email: options.email,
+      pass: options.password,
+      name: options.name
+    });
+    return (await this.#post(url, body)).text();
   }
 }
