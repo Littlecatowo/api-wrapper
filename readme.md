@@ -9,40 +9,40 @@ ReadMe.md編輯：浪貓(xLittlecatTw)
 #
 
 # CommonJS
-### 1. 在資料夾(api-wrapper)內或外 創建一個 main.js
-* 注意創建的位置，將影響 2. 的 import路徑
+### **1. 在資料夾(api-wrapper)內或外 創建一個 main.js**
+* 注意創建的位置，將影響 **第二部分** 的 import路徑
 
-### 2. import 所需 Class
+### **2. import 所需 Class**
 
-A. 創建在資料夾內 
+A. *創建在資料夾內*
 
-* 如果日後 api-wrapper 有更新，自己寫的檔案會被覆蓋掉
+* 如果日後 api-wrapper 有更新，**自己寫的檔案會被覆蓋掉**
 
     ```js
         const { ExpTechApi, ExpTechWebsocket } = require("./dist/index.js");
         const { ExpTechApi, ExpTechWebsocket } = require("./dist/index.min.js");
     ```
 
-B. 創建在資料夾外 (Recommand) 
+B. *創建在資料夾外 (Recommand)*
 
-* 如果日後 api-wrapper 有更新，不會覆蓋掉自己寫的檔案
+* 如果日後 api-wrapper 有更新，**不會覆蓋掉自己寫的檔案**
 
     ```js
         const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.js");
         const { ExpTechApi, ExpTechWebsocket } = require("./api-wrapper/dist/index.min.js");
     ```
 
-### 3. 設定 api & websocket
+### **3. 設定 api & websocket**
         
-* 說明
+* *說明*
         
-    1. api 
+    1. *api* 
             
         * key 從 ExpTech 網頁取得的 key
 
-    2. websocket
-        *    key     從 ExpTech 網頁取得的 key (必填)
-        *    service 訂閱的服務項目 (必填)
+    2. *websocket*
+        *    key     *從 ExpTech 網頁取得的 key (必填)*
+        *    service *訂閱的服務項目 (必填)*
              
                 #### **可訂閱項目**
                 1.    trem.rts
@@ -56,9 +56,9 @@ B. 創建在資料夾外 (Recommand)
                 
         *    config? 取得特定一個或數個測站的波形圖 (選填)
 
-### SupportedService & WebSocketEvent
+### **SupportedService & WebSocketEvent**
 
-* SupportedService
+* *SupportedService*
 
         * 即時地動資料
         SupportedService["RealtimeStation"] = "trem.rts";
@@ -84,7 +84,7 @@ B. 創建在資料夾外 (Recommand)
         * TREM 震度速報資料
         SupportedService["TremIntensity"] = "trem.intensity";
 
-* WebSocketEvent
+* *WebSocketEvent*
     
         * 地震速報 聆聽事件
         WebSocketEvent["Eew"] = "eew";
@@ -98,7 +98,7 @@ B. 創建在資料夾外 (Recommand)
         * 即時地動波形圖資料 聆聽事件
         WebSocketEvent["Rtw"] = "rtw";
 
-### 實作例子  
+### **實作例子**  
 ```js
 const { ExpTechApi, ExpTechWebsocket, SupportedService, WebSocketEvent } = require("./api-wrapper/dist/index.js");
 /* or */
