@@ -128,9 +128,14 @@ ws.on(WebSocketEvent.Eew, console.log);
 ```
 
 # TypeScript
+
+### 說明可參考 CommonJS 第1~3部分
 ```ts
 import { ExpTechApi } from "./api-wrapper/src/api.ts";
 import { ExpTechWebsocket, SupportedService, WebSocketEvent } from "./api-wrapper/src/websocket.ts";
+/* or */
+import { ExpTechApi } from "./src/api.ts";
+import { ExpTechWebsocket, SupportedService, WebSocketEvent } from "./src/websocket.ts";
 
 const api = new ExpTechApi();
 
