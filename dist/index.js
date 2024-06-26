@@ -33,12 +33,13 @@ class Route {
     earthquakeReport(id) {
         return `${this.randomServerBaseUrl()}/eq/report/${id}`;
     }
-    rts(timestamp) {
+    static rts(timestamp) {
+        const baseurl = `https://lb-${Math.ceil(Math.random() * 4)}.exptech.com.tw/api/v1`;
         if (timestamp) {
-            return `${this.randomLoadBalancerBaseUrl()}/trem/rts/${timestamp}`;
+            return `${baseurl}/trem/rts/${timestamp}`;
         }
         else {
-            return `${this.randomLoadBalancerBaseUrl()}/trem/rts`;
+            return `${baseurl}/trem/rts`;
         }
     }
     rtsImage(timestamp) {
@@ -49,26 +50,27 @@ class Route {
             return `${this.randomLoadBalancerBaseUrl()}/trem/rts-image`;
         }
     }
-    eew(timestamp, type) {
+    static eew(timestamp, type) {
+        const baseurl = `https://lb-${Math.ceil(Math.random() * 4)}.exptech.com.tw/api/v1`;
         if (timestamp) {
             if (type) {
-                return `${this.randomLoadBalancerBaseUrl()}/eq/eew/${timestamp}?type=${type}`;
+                return `${baseurl}/eq/eew/${timestamp}?type=${type}`;
             }
             else {
-                return `${this.randomLoadBalancerBaseUrl()}/eq/eew/${timestamp}`;
+                return `${baseurl}/eq/eew/${timestamp}`;
             }
         }
         else {
             if (type) {
-                return `${this.randomLoadBalancerBaseUrl()}/eq/eew?type=${type}`;
+                return `${baseurl}/eq/eew?type=${type}`;
             }
             else {
-                return `${this.randomLoadBalancerBaseUrl()}/eq/eew`;
+                return `${baseurl}/eq/eew`;
             }
         }
     }
     station() {
-        return `${this.randomLoadBalancerUrl()}/file/resource/station.json`;
+        return "https://raw.githubusercontent.com/exptechtw/api/master/resource/station.json";
     }
 }
 
@@ -103,6 +105,11 @@ exports.EewSource = void 0;
      * @link https://www.scdzj.gov.cn
      */
     EewSource["Scdzj"] = "scdzj";
+    /**
+     * TREM 臺灣即時地震監測
+     * @link https://exptech.com.tw/
+     */
+    EewSource["Trem"] = "trem";
 })(exports.EewSource || (exports.EewSource = {}));
 /**
  * 地震速報狀態
@@ -245,7 +252,7 @@ class ExpTechApi extends events.EventEmitter {
      * @returns {Promise<Rts>}
      */
     async getRts(time) {
-        const url = this.route.rts(time ? `${time}` : "");
+        const url = Route.rts(time ? `${time}` : "");
         return (await this.#get(url)).json();
     }
     /**
@@ -261,10 +268,10 @@ class ExpTechApi extends events.EventEmitter {
      * 獲取地震速報資料
      * @param {number} [time] 時間
      * @param {EewSource} [type] 地震速報來源機關
-     * @returns {Promise<Eew[]>}
+     * @returns {Promise<EewType[]>}
      */
     async getEew(time, type) {
-        const url = this.route.eew(time ? `${time}` : "");
+        const url = Route.eew(time ? `${time}` : "");
         return (await this.#get(url)).json();
     }
     /**
@@ -412,6 +419,9 @@ class ExpTechWebsocket extends events.EventEmitter {
             type: "start"
         };
         this.ws.send(JSON.stringify(this.websocketConfig));
+    }
+    [Symbol.dispose]() {
+        this.ws.close();
     }
 }
 

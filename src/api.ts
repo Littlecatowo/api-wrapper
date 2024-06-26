@@ -238,6 +238,11 @@ export enum EewSource {
    * @link https://www.scdzj.gov.cn
    */
   Scdzj = "scdzj",
+  /**
+   * TREM 臺灣即時地震監測
+   * @link https://exptech.com.tw/
+   */
+  Trem = "trem",
 }
 
 /**
@@ -262,12 +267,14 @@ export enum EewStatus {
   Test = 3,
 }
 
-export interface Eew {
+type AuthoritySource = EewSource.Cwa | EewSource.Jma | EewSource.Nied | EewSource.Kma | EewSource.Scdzj;
+
+export type Eew = {
   type: "eew";
   /**
    * 地震速報來源機關
    */
-  author: EewSource;
+  author: AuthoritySource;
   /**
    * 地震速報 ID
    */
@@ -317,14 +324,75 @@ export interface Eew {
      */
     max: number;
   };
-  timestamp: number;
-  delay: number;
-}
+};
+
+export type TremEew = {
+  type: "eew";
+  /**
+   * 地震速報來源機關
+   */
+  author: EewSource.Trem;
+  /**
+   * 地震速報 ID
+   */
+  id: string;
+  /**
+   * 地震速報報號
+   */
+  serial: number;
+  /**
+   * 地震速報狀態
+   */
+  status: EewStatus;
+  /**
+   * 是否有震源資料
+   */
+  detail: 1 | 0;
+  /**
+   * 地震速報是否為最終報
+   */
+  final: 1 | 0;
+  /**
+   * 地震速報參數
+   */
+  eq: {
+    /**
+     * 地震速報時間
+     */
+    time: number;
+    /**
+     * 地震震央預估經度
+     */
+    lon: number;
+    /**
+     * 地震震央預估緯度
+     */
+    lat: number;
+    /**
+     * 地震預估深度
+     */
+    depth: number;
+    /**
+     * 地震預估芮氏規模
+     */
+    mag: number;
+    /**
+     * 地震預估位置
+     */
+    loc: string;
+    /**
+     * 地震預估最大震度
+     */
+    max: number;
+  };
+};
+
+export type EewType = Eew | TremEew;
 
 /**
  * 校時
  */
-export interface Ntp {
+export type Ntp = {
   type: "ntp";
   /**
    * 伺服器時間
@@ -334,7 +402,7 @@ export interface Ntp {
    * 校時板本
    */
   version: number;
-}
+};
 
 /**
  * 身份驗證資訊
@@ -488,7 +556,7 @@ export class ExpTechApi extends EventEmitter {
    * @returns {Promise<Rts>}
    */
   async getRts(time?: number): Promise<Rts> {
-    const url = this.route.rts(time ? `${time}` : "");
+    const url = Route.rts(time ? `${time}` : "");
     return (await this.#get(url)).json();
   }
 
@@ -506,10 +574,10 @@ export class ExpTechApi extends EventEmitter {
    * 獲取地震速報資料
    * @param {number} [time] 時間
    * @param {EewSource} [type] 地震速報來源機關
-   * @returns {Promise<Eew[]>}
+   * @returns {Promise<EewType[]>}
    */
-  async getEew(time?: number, type?: EewSource): Promise<Eew[]> {
-    const url = this.route.eew(time ? `${time}` : "");
+  async getEew(time?: number, type?: EewSource): Promise<EewType[]> {
+    const url = Route.eew(time ? `${time}` : "");
     return (await this.#get(url)).json();
   }
 

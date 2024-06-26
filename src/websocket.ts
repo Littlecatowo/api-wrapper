@@ -1,4 +1,4 @@
-import type { Eew, Ntp, Report, Rts, Rtw } from "./api";
+import type { EewType, Ntp, Report, Rts, Rtw } from "./api";
 import { EventEmitter } from "events";
 import Route from "./route";
 
@@ -167,6 +167,10 @@ export class ExpTechWebsocket extends EventEmitter {
 
     this.ws.send(JSON.stringify(this.websocketConfig));
   }
+
+  [Symbol.dispose](): void {
+    this.ws.close();
+  }
 }
 
 export declare interface ExpTechWebsocket extends EventEmitter {
@@ -194,9 +198,9 @@ export declare interface ExpTechWebsocket extends EventEmitter {
   /**
    * 地震速報資料
    * @param {WebSocketEvent.Eew} event eew
-   * @param {(eew: Eew) => void} listener
+   * @param {(eew: EewType) => void} listener
    */
-  on(event: WebSocketEvent.Eew, listener: (eew: Eew) => void): this;
+  on(event: WebSocketEvent.Eew, listener: (eew: EewType) => void): this;
 
   /**
    * 地震速報資料

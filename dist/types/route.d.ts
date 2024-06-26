@@ -14,9 +14,9 @@ export default class Route {
     login(server?: number): `https://api-${number}.exptech.com.tw/api/v${number}/et/login`;
     earthquakeReportList(limit?: number): `https://lb-${number}.exptech.com.tw/api/v${number}/eq/report?limit=${number}&key=${string}`;
     earthquakeReport(id: string): `https://lb-${number}.exptech.com.tw/api/v${number}/eq/report/${string}`;
-    rts(timestamp?: string): string;
+    static rts(timestamp?: string): string;
     rtsImage(timestamp?: string): string;
-    eew(timestamp?: string, type?: string): `https://lb-${number}.exptech.com.tw/api/v${number}/eq/eew/${string}` | `https://lb-${number}.exptech.com.tw/api/v${number}/eq/eew?type=${string}` | `https://lb-${number}.exptech.com.tw/api/v${number}/eq/eew`;
-    station(): `https://lb-${number}.exptech.com.tw/file/resource/station.json`;
+    static eew(timestamp?: string, type?: string): `${string}/eq/eew/${string}` | `${string}/eq/eew?type=${string}` | `${string}/eq/eew`;
+    station(): "https://raw.githubusercontent.com/exptechtw/api/master/resource/station.json";
 }
 export {};
